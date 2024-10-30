@@ -56,7 +56,7 @@
     "bitbucket": "^2.7.0",
     "body-parser": "^1.19.2",
     "configcat-node": "^8.0.0",
-    "cookie": "^0.4.2",
+    "cookie": "^1.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.4",
     "countries-list": "^2.6.1",
@@ -78,11 +78,11 @@
     "node-fetch": "^2.6.7",
     "opentracing": "^0.14.4",
     "p-throttle": "^5.1.0",
-    "passport": "^0.4.1",
+    "passport": "^0.7.0",
     "passport-dummy": "^0.0.1",
     "passport-gitlab2": "5.0.0",
     "passport-http": "^0.3.0",
-    "probot": "12.1.1",
+    "probot": "12.3.3",
     "prom-client": "^13.2.0",
     "rate-limiter-flexible": "^2.3.6",
     "redlock": "^5.0.0-beta.2",
@@ -91,7 +91,7 @@
     "twilio": "^4.6.0",
     "uuid": "^8.3.2",
     "vscode-ws-jsonrpc": "^0.2.0",
-    "ws": "^7.4.6"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@testdeck/mocha": "^0.3.3",
