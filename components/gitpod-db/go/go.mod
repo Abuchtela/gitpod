@@ -1,6 +1,7 @@
 module github.com/gitpod-io/gitpod/components/gitpod-db/go
 
 go 1.20
+toolchain go1.24.1
 
 replace github.com/gitpod-io/gitpod/common-go => ../../common-go // leeway
 
@@ -33,9 +34,9 @@ require (
 	go.opentelemetry.io/otel v1.16.0 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230526161137-0005af68ea54 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
