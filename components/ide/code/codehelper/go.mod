@@ -1,6 +1,7 @@
 module github.com/gitpod-io/gitpod/code/codehelper
 
 go 1.20
+toolchain go1.24.1
 
 require (
 	github.com/gitpod-io/gitpod/common-go v0.0.0-00010101000000-000000000000
@@ -11,7 +12,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-require golang.org/x/sys v0.8.0 // indirect
+require golang.org/x/sys v0.30.0 // indirect
 
 require (
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
@@ -24,8 +25,8 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/sourcegraph/jsonrpc2 v0.0.0-20200429184054-15c2290dcb37 // indirect
-	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
