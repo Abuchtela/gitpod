@@ -1,6 +1,6 @@
 module github.com/gitpod-io/gitpod/image-builder
 
-go 1.20
+go 1.23.0
 
 require (
 	github.com/alecthomas/jsonschema v0.0.0-20210526225647-edb03dcab7bc
@@ -15,7 +15,7 @@ require (
 	github.com/gitpod-io/gitpod/image-builder/api v0.0.0-00010101000000-000000000000
 	github.com/gitpod-io/gitpod/ws-manager/api v0.0.0-00010101000000-000000000000
 	github.com/golang/mock v1.6.0
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/mattn/go-isatty v0.0.14
@@ -62,13 +62,13 @@ require (
 	github.com/uber/jaeger-client-go v2.29.1+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.uber.org/atomic v1.8.0 // indirect
-	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sync v0.2.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.9.1 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

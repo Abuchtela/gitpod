@@ -1,6 +1,6 @@
 module github.com/gitpod-io/gitpod/blobserve
 
-go 1.20
+go 1.23.0
 
 require (
 	github.com/containerd/containerd v1.6.21
@@ -14,7 +14,7 @@ require (
 	github.com/opencontainers/image-spec v1.1.0-rc2.0.20221005185240-3a7f492d3f1b
 	github.com/prometheus/client_golang v1.16.0
 	github.com/spf13/cobra v1.6.0
-	golang.org/x/sync v0.2.0
+	golang.org/x/sync v0.11.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 )
 
@@ -100,11 +100,11 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.10.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.9.0 // indirect
-	golang.org/x/text v0.10.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af // indirect
 	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
 	google.golang.org/grpc v1.55.0 // indirect
