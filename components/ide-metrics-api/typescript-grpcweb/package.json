@@ -11,7 +11,7 @@
     "lib"
   ],
   "dependencies": {
-    "@improbable-eng/grpc-web": "^0.14.0",
+    "@improbable-eng/grpc-web": "^0.15.0",
     "google-protobuf": "^3.19.1"
   },
   "devDependencies": {
