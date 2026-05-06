@@ -273,6 +273,9 @@ type mockBlobSource struct {
 	failReaderOnFirstCall bool
 	// The number of bytes to read successfully before the reader fails.
 	failAfterBytes int
+
+	// If non-empty, return this URL instead of a reader on success.
+	returnURL string
 }
 
 func (m *mockBlobSource) Name() string { return "mock" }
@@ -284,6 +287,10 @@ func (m *mockBlobSource) GetBlob(ctx context.Context, details *rfapi.ImageSpec, 
 	m.callCount++
 	if m.callCount <= m.failCount {
 		return false, "", "", nil, m.failError
+	}
+
+	if m.returnURL != "" {
+		return true, "", m.returnURL, nil, nil
 	}
 
 	if m.failReaderOnFirstCall && m.callCount == 1 {
@@ -391,4 +398,143 @@ func TestRetrieveFromSource_RetryOnCopy(t *testing.T) {
 	assert.False(t, dontCache)
 	assert.Equal(t, "hello world", w.Body.String())
 	assert.Equal(t, 2, mockSource.callCount, "Expected GetBlob to be called twice (1st succeeds, copy fails, 2nd succeeds)")
+}
+
+func TestRetrieveFromSource_RetryOnECONNRESET(t *testing.T) {
+	// Arrange: the reader fails with ECONNRESET on the first call, succeeds on the second.
+	mockSource := &mockBlobSource{
+		failCount:             0,
+		failReaderOnFirstCall: true,
+		failAfterBytes:        5,
+		failError:             syscall.ECONNRESET,
+		successData:           "hello world",
+	}
+
+	bh := &blobHandler{
+		Digest: "sha256:dummy",
+		Spec:   &rfapi.ImageSpec{},
+	}
+
+	originalBackoff := retrievalBackoffParams
+	retrievalBackoffParams = wait.Backoff{
+		Duration: 1 * time.Millisecond,
+		Steps:    3,
+	}
+	defer func() { retrievalBackoffParams = originalBackoff }()
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/v2/...", nil)
+
+	// Act
+	handled, dontCache, err := bh.retrieveFromSource(context.Background(), mockSource, w, r)
+
+	// Assert
+	require.NoError(t, err)
+	assert.True(t, handled)
+	assert.False(t, dontCache)
+	assert.Equal(t, "hello world", w.Body.String())
+	assert.Equal(t, 2, mockSource.callCount, "Expected GetBlob to be called twice (1st copy fails with ECONNRESET, 2nd succeeds)")
+}
+
+func TestRetrieveFromSource_AllRetriesExhausted(t *testing.T) {
+	// Arrange: GetBlob always fails, more times than the retry budget.
+	mockSource := &mockBlobSource{
+		failCount:   10,
+		failError:   errors.New("persistent network error"),
+		successData: "hello world",
+	}
+
+	bh := &blobHandler{
+		Digest: "sha256:dummy",
+		Spec:   &rfapi.ImageSpec{},
+	}
+
+	originalBackoff := retrievalBackoffParams
+	retrievalBackoffParams = wait.Backoff{
+		Duration: 1 * time.Millisecond,
+		Steps:    3,
+	}
+	defer func() { retrievalBackoffParams = originalBackoff }()
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/v2/...", nil)
+
+	// Act
+	handled, dontCache, err := bh.retrieveFromSource(context.Background(), mockSource, w, r)
+
+	// Assert
+	require.Error(t, err)
+	assert.False(t, handled)
+	assert.True(t, dontCache)
+	assert.Equal(t, 3, mockSource.callCount, "Expected GetBlob to be called exactly Steps times before giving up")
+}
+
+func TestRetrieveFromSource_NonRetryableErrorDuringCopy(t *testing.T) {
+	// Arrange: the reader fails with a non-retryable error (not ECONNRESET/EPIPE).
+	mockSource := &mockBlobSource{
+		failCount:             0,
+		failReaderOnFirstCall: true,
+		failAfterBytes:        5,
+		failError:             io.ErrUnexpectedEOF,
+		successData:           "hello world",
+	}
+
+	bh := &blobHandler{
+		Digest: "sha256:dummy",
+		Spec:   &rfapi.ImageSpec{},
+	}
+
+	originalBackoff := retrievalBackoffParams
+	retrievalBackoffParams = wait.Backoff{
+		Duration: 1 * time.Millisecond,
+		Steps:    3,
+	}
+	defer func() { retrievalBackoffParams = originalBackoff }()
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/v2/...", nil)
+
+	// Act
+	handled, dontCache, err := bh.retrieveFromSource(context.Background(), mockSource, w, r)
+
+	// Assert: non-retryable errors should not be retried.
+	require.Error(t, err)
+	assert.ErrorIs(t, err, io.ErrUnexpectedEOF)
+	assert.False(t, handled)
+	assert.True(t, dontCache)
+	assert.Equal(t, 1, mockSource.callCount, "Should NOT retry on non-retryable error")
+}
+
+func TestRetrieveFromSource_URLRedirect(t *testing.T) {
+	// Arrange: GetBlob returns a redirect URL instead of a reader.
+	mockSource := &mockBlobSource{
+		returnURL:   "https://example.com/blob/content",
+		successData: "hello world",
+	}
+
+	bh := &blobHandler{
+		Digest: "sha256:dummy",
+		Spec:   &rfapi.ImageSpec{},
+	}
+
+	originalBackoff := retrievalBackoffParams
+	retrievalBackoffParams = wait.Backoff{
+		Duration: 1 * time.Millisecond,
+		Steps:    3,
+	}
+	defer func() { retrievalBackoffParams = originalBackoff }()
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/v2/...", nil)
+
+	// Act
+	handled, dontCache, err := bh.retrieveFromSource(context.Background(), mockSource, w, r)
+
+	// Assert: redirect should be issued, result should not be cached.
+	require.NoError(t, err)
+	assert.True(t, handled)
+	assert.True(t, dontCache)
+	assert.Equal(t, http.StatusPermanentRedirect, w.Code)
+	assert.Equal(t, "https://example.com/blob/content", w.Header().Get("Location"))
+	assert.Equal(t, 1, mockSource.callCount, "Should call GetBlob exactly once for a redirect")
 }
